@@ -3,9 +3,9 @@ let time = document.getElementById("time")
 let pic = document.getElementById("pic")
 let counter = 0
 let showing = new Date()
-const refresh = 2000
+const refresh = 60 * 1000
 let timeout
-let f = 1
+let f = 60
 
 function getFilename() {
   console.log("getting filename")
