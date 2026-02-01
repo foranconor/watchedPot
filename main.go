@@ -87,7 +87,6 @@ func getPic(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	fmt.Println(files)
 	// get the file name from the request
 	when, err := strconv.Atoi(r.PathValue("timestamp"))
 	if err != nil {
@@ -108,14 +107,11 @@ func getPic(w http.ResponseWriter, r *http.Request) {
 		if distance < 0 {
 			distance = distance * -1
 		}
-		fmt.Println(distance)
 		if distance < closest {
 			closest = distance
 			closestFile = file.Name()
 		}
 
 	}
-	fmt.Println(closestFile)
-	fmt.Println(closest)
 	serveFile(filepath.Join(dir, closestFile), w, r)
 }
