@@ -80,3 +80,51 @@ window.addEventListener("click", function(e) {
   }
   updateImage()
 })
+async function hashSecret(secret) {
+  let salted = secret
+  for (let i = 0; i < secret.length % 7; i++) {
+    salted = salted + SALT
+  }
+  const encoder = new TextEncoder()
+  const hash = await crypto.subtle.digest("SHA-512", encoder.encode(salted))
+  return hash
+}
+
+function arrayBufferToBase64(digest) {
+  const hashArray = new Uint8Array(digest)
+  const hashBytes = Array.from(hashArray).map(byte => String.fromCharCode(byte)).join('')
+  const hashBase64 = btoa(hashBytes)
+  return hashBase64
+}
+
+function base64ToArrayBuffer(base64) {
+  const binaryString = atob(base64)
+  const bytes = new Uint8Array(binaryString.length)
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i)
+  }
+  return bytes.buffer
+}
+
+
+async function doAuth() {
+  let res = await fetch(`${API}/nonce`, {
+    method: "POST",
+    body: JSON.stringify(msg)
+  })
+  if (!res.ok) {
+    return Promise.reject(err)
+  }
+  const body = await res.json()
+  const nonce = base64ToArrayBuffer(body.nonce)
+
+  // salt our secret
+  let secret = document.getElementById("secret").value
+  const salted = new Uint8Array(secret.byteLength + nonce.byteLength * 2)
+  salted.set(new Uint8Array(nonce), 0)
+  salted.set(new Uint8Array(secret), nonce.byteLength)
+  salted.set(new Uint8Array(nonce), nonce.byteLength + secret.byteLength)
+
+  // hash this thing
+  const hash = await crypto.subtle.digest("SHA-512", salted)
+}

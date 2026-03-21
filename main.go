@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/sha512"
 	"fmt"
 	"math"
 	"mime"
@@ -9,6 +10,8 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"github.com/google/uuid"
 )
 
 const (
@@ -46,6 +49,9 @@ func main() {
 	s.HandleFunc("GET /", root)
 	s.HandleFunc("GET /{file}", get)
 	s.HandleFunc("GET /assets/", get)
+
+	/* API Routes */
+	s.HandleFunc("GET /nonce", nonce)
 	s.HandleFunc("GET /pics/{timestamp}", getPic)
 
 	middleware := Middleware(s, Cors)
@@ -115,4 +121,32 @@ func getPic(w http.ResponseWriter, r *http.Request) {
 
 	}
 	serveFile(filepath.Join(dir, closestFile), w, r)
+}
+
+var challengeResponse [64]byte
+
+const (
+	salt = "LakeGrassmereFlakey"
+	n    = 3
+)
+
+func nonce(w http.ResponseWriter, r *http.Request) {
+	nonce := uuid.New()
+	challengeResponse = transformChallenge(nonce.String())
+	w.Write([]byte(nonce.String()))
+}
+
+func transformChallenge(str string) [64]byte {
+	// add n copies of salt to the beginning of the string
+	out := ""
+	for i := 0; i < n; i++ {
+		out += salt
+	}
+	out += str
+	// n + 1 copies of salt after
+	for i := 0; i < n; i++ {
+		out += salt
+	}
+	return sha512.Sum512([]byte(out))
+
 }
