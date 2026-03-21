@@ -7,20 +7,29 @@ const refresh = 1000
 let speed = 1
 let timeout
 let f = 1
+let lastTime = 0
 
 function getFilename() {
   return showing.getTime()
 }
 
+function toLocalTime() {
+  date = new Date(showing.getTime())
+  const pad = n => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
 function ticker() {
   const maybeTime = structuredClone(showing)
-  maybeTime.setTime(maybeTime.getTime() * 1000 * speed)
+  maybeTime.setTime(maybeTime.getTime() + 1000 * speed)
   if (maybeTime.getTime() < Date.now()) {
     showing = maybeTime
-
-    document.getElementById("time").innerHTML = `${getFilename()}`
   } else {
   }
+}
+
+function updateTime() {
+  document.getElementById("time").innerHTML = `${toLocalTime()}`
 }
 
 setInterval(ticker, 1000)
@@ -35,11 +44,26 @@ function shiftTime(amount) {
   }
 }
 
+function setSpeed(id, newSpeed) {
+  // clear all buttons
+  document.getElementsByName("speedBtn").forEach(btn => {
+    btn.classList.remove("active")
+  })
+  document.getElementById(id).classList.add("active")
+  speed = newSpeed
+
+}
+
 updateImage()
 
 function updateImage() {
   clearTimeout(timeout)
-  fetchImage()
+  // do we need to fetch a new image?
+  if (showing.getTime() !== lastTime) {
+    fetchImage()
+    lastTime = showing.getTime()
+    updateTime()
+  }
   // time.innerHTML = `<p>${getFilename()}</p>`
   timeout = setTimeout(updateImage, refresh)
 }
@@ -51,6 +75,7 @@ async function fetchImage() {
       const blob = await res.blob()
       const url = URL.createObjectURL(blob)
       pic.src = url
+
     } else {
       throw new Error(res.status)
     }
@@ -80,13 +105,13 @@ window.addEventListener("click", function(e) {
       shiftTime(6000)
       break
     case "x1":
-      speed = 1
+      setSpeed("x1", 1)
       break
     case "x10":
-      speed = 10
+      setSpeed("x10", 10)
       break
     case "x100":
-      speed = 100
+      setSpeed("x100", 100)
       break
     default:
       return

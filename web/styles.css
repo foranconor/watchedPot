@@ -28,25 +28,27 @@
   left: 0;
   width: 100%;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
   text-align: center;
-  font-size: 2em;
+  gap: 0.5em;
 }
 
 button {
   background-color: transparent;
-  text-shadow: 0 0 0.5em black;
-  color: white;
   border: none;
   font-size: 3em;
-  font-family: "Space Mono", monospace;
   cursor: pointer;
+  font-family: "Space Mono", monospace;
+  text-shadow: 0 0 0.5em black;
+  color: white;
+  padding: 0.2em;
 }
 
-button:hover {
-  scale: 1.1;
-  transition: 0.2s ease all;
+button.active {
+  background-color: #ff00ff50;
+  border-radius: 0.5em;
+  transition: 0.1s ease all;
 }
 
 body {
@@ -55,15 +57,21 @@ body {
   justify-content: center;
   margin: 0;
   overflow: hidden;
+  font-family: "Space Mono", monospace;
+  text-shadow: 0 0 0.5em black;
+  color: white;
+}
+
+p {
+  font-size: 3em;
+  width: 50%;
+  margin: 0;
 }
 
 #app {
   width: 100%;
   height: 100%;
 
-  p {
-    font-size: 2em;
-  }
 
   img {
     width: 100vw;
