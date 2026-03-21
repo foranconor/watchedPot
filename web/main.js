@@ -9,7 +9,6 @@ let timeout
 let f = 1
 
 function getFilename() {
-  console.log("getting filename")
   return showing.getTime()
 }
 
@@ -19,6 +18,7 @@ function ticker() {
   if (maybeTime.getTime() < Date.now()) {
     showing = maybeTime
 
+    document.getElementById("time").innerHTML = `${getFilename()}`
   } else {
   }
 }
