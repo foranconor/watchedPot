@@ -1,0 +1,18 @@
+[Unit]
+Description=My server
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/home/conor/watchedPot/main
+WorkingDirectory=/home/conor/watchedPot
+Restart=on-failure
+RestartSec=5s
+User=conor
+StandardOutput=journal
+StandardError=journal
+
+
+[Install]
+WantedBy=multi-user.target

@@ -56,6 +56,7 @@ func main() {
 
 	middleware := Middleware(s, Cors)
 
+	fmt.Println("Serving ...")
 	http.ListenAndServe(":6767", middleware)
 }
 
